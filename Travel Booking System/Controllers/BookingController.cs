@@ -6,24 +6,24 @@ using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Travel_Booking_System.Controllers
+namespace Travel_Booking_System
 {
-    public class AuthController : Controller
+    public class BookingController : Controller
     {
-        // GET: /Auth
+        // GET: /Booking
         public IActionResult Index()
-        {
-            return RedirectToAction("Login");
-        }
-
-        // GET: /Auth/Login
-        public IActionResult Login()
         {
             return View();
         }
 
-        // GET: /Auth/Signup
-        public IActionResult Signup()
+        // GET: /Booking/Airfare
+        public IActionResult Airfare()
+        {
+            return View();
+        }
+
+        // GET: /Booking/Hotel
+        public IActionResult Hotel()
         {
             return View();
         }
