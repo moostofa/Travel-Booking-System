@@ -7,13 +7,16 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml;
 
+
+// This class manages serialization and deserialization of user account details (name, email, password etc.) to a txt file
+// We will eventually need another class that communicates with an actual DB such as Postgres (for bonus marks by introducing external DB with LINQ).
 public class FileManager
 {
-    private static string filePath = //relative path;
+    private static string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Models", "user_details.txt");
     private static List<User> users = new List<User>();
 
-    //gets updated list from file
-    private List<User> getList()
+    // Deserializes the JSON txt file of user account details as a list of User objects
+    private List<User> readUsersFromFile()
     {
         string userData = File.ReadAllText(filePath);
 
@@ -37,12 +40,11 @@ public class FileManager
 
     public static List<User> getCustomersList()
     {
-        List<User> userList = FileManager.getList();
+        List<User> userList = readUsersFromFile();
         List<User> customerList = userList.FindAll(user => user.Type == USER_TYPE.);
         return customerList;
     }
 
-    //search by email - can change to whatever
     public static Customer searchCustomer(string email)
     {
         foreach (Customer customer in getCustomersList())
@@ -53,7 +55,6 @@ public class FileManager
         return null;
     }
 
-    //search by booking
     public static Customer searchCustomer(int bookingNumber)
     {
         foreach (Customer customer in getCustomersList())
@@ -68,12 +69,30 @@ public class FileManager
 
     public static addUser(User user)
     {
-        users = getList();
+        users = readUsersFromFile();
         users.Add(user);
-        saveData();
+        writeUsersToFile();
     }
 
-    public static void saveData()
+    // for changing account details e.g 'First Name'
+    // NOT FOR Updating Booking - Check BookingManager.UpdateBooking(...)
+    public static void UpdateCustomerDetails<T>(Customer customer, string accountDetail, T change) where T : struct
+    {
+        List<User> users = readUsersFromFile();
+        int i = users.IndexOf((User)customer);
+        PropertyInfo prop = typeof(User).GetProperty(accountDetail);
+        if (prop != null && prop.CanWrite)
+        {
+            prop.SetValue(users[i], change);
+        }
+        else
+        {
+            Console.WriteLine("Update Customer Method: property (accountDetail) is null - check typo");
+        }
+    }
+
+
+    private static void writeUsersToFile()
     {
         JsonSerializerOptions options = new JsonSerializerOptions
         {
@@ -86,7 +105,7 @@ public class FileManager
 
     public static void addBooking(Customer user, KeyValuePair<int, string> bookingID)
     {
-        users = getList();
+        users = readUsersFromFile();
         try
         {
             int index = users.FindIndex(obj => obj.ID == user.ID);
@@ -98,19 +117,18 @@ public class FileManager
                 }
                 else
                 {
-                    Console.WriteLine("Check addBooking Method - bookings list is null")
-                        // initialise bookings and add bookingID for quick fix - but something is wrong (clearing the dictionary data, or not being written properly)
+                    // something is wrong since bookings dictionary can be empty, but should never be null (bookings was deleted or nullified, or not written properly to the file)
+                    // if this happens, you can initialise bookings and add bookingID for quick fix, but root issue should be investigated
+                    Console.WriteLine("Check addBooking Method in FileManager - bookings list is null") 
                 }
             }
-            saveData();
+            writeUsersToFile();
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
         }
     }
-
-    //update method (altering profile info)
 }
 
 
@@ -162,9 +180,6 @@ public class UserConverter : JsonConverter<User>
         }
         writer.WriteEndObject();
     }
-
-
-
 }
 
 
