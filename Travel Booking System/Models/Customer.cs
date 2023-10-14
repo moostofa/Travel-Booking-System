@@ -17,4 +17,6 @@ public class Customer : User
         set { bookings[key] = value; }
     }
 
+    public Dictionary<int, string> Bookings { get { return bookings; } };
+
 }
