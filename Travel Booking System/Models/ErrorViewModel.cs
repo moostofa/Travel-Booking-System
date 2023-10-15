@@ -1,4 +1,4 @@
-﻿namespace Travel_Booking_System.Models;
+namespace Travel_Booking_System.Models;
 
 public class ErrorViewModel
 {
@@ -6,4 +6,3 @@ public class ErrorViewModel
 
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 }
-

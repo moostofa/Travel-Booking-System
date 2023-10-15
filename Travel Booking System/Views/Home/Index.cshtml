@@ -1,15 +1,36 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <div>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <h1>Welcome to Travel Booking System, @User.Identity?.Name!</h1>
+        <button>
+            <a asp-controller="Booking" asp-area="" asp-action="Airfare">
+                Book/View Airfares
+            </a>
+        </button>
+        <button>
+            <a asp-controller="Booking" asp-area="" asp-action="Hotel">
+                Book/View Hotels
+            </a>
+        </button>
+    }
+    else
+    {
         <h1>Welcome to Travel Booking System!</h1>
-    </div>
-    <form method="get">
-        <button><a href="/Auth/Login">Login</a></button>
-        <button><a href="/Auth/Signup">Signup</a></button>
-        <button><a href="/Booking">Booking Screen</a></button>
-    </form>
+        <h4>Please login or register an account to access our services.</h4>
+        <button>
+            <a asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </button>
+        <button>
+            <a asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </button>
+    }
 </div>
 
